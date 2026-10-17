@@ -1,0 +1,720 @@
+/*
+Project Dashboard styles.
+
+Everything is scoped under `.project-dashboard` so the plugin never restyles
+the rest of the vault. Colors resolve from Obsidian theme variables, so both
+light and dark themes work without theme-specific overrides.
+*/
+
+.project-dashboard {
+  /* Status palette (mapped onto Obsidian's theme colors) */
+  --pd-coral: var(--color-orange, #d9822b);
+  --pd-blue: var(--color-blue, #4d72c8);
+  --pd-purple: var(--color-purple, #8b6cc4);
+  --pd-amber: var(--color-yellow, #b58a12);
+  --pd-green: var(--color-green, #4e8a63);
+  --pd-neutral: var(--text-muted, #77717e);
+  --pd-danger: var(--color-red, #c45b42);
+
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 2px;
+  font-size: var(--font-ui-small, 13px);
+  color: var(--text-normal);
+}
+
+/* ---------------------------------------------------------------- palette */
+
+.pd-cat-finish-first {
+  --pd-accent: var(--pd-coral);
+}
+.pd-cat-active {
+  --pd-accent: var(--pd-blue);
+}
+.pd-cat-scheduled {
+  --pd-accent: var(--pd-purple);
+}
+.pd-cat-defining {
+  --pd-accent: var(--pd-amber);
+}
+.pd-cat-complete {
+  --pd-accent: var(--pd-green);
+}
+.pd-cat-closed,
+.pd-cat-neutral {
+  --pd-accent: var(--pd-neutral);
+}
+
+/* ------------------------------------------------------------ focus strip */
+
+.pd-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  background: var(--background-primary);
+  overflow: hidden;
+}
+
+.pd-cell {
+  min-width: 0;
+  padding: 8px 12px 9px;
+  border-right: 1px solid var(--background-modifier-border);
+}
+
+.pd-cell:last-child {
+  border-right: 0;
+}
+
+.pd-cell-label {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.pd-cell-value {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pd-cell-value--empty {
+  color: var(--text-faint);
+  font-weight: 500;
+}
+
+.pd-cell-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 15px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.pd-chip-extra {
+  border-radius: 999px;
+  padding: 0 6px;
+  font-size: 10px;
+  background: color-mix(in srgb, var(--interactive-accent) 16%, transparent);
+  color: var(--text-normal);
+}
+
+/* --------------------------------------------------------------- toolbar */
+
+.pd-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.pd-legend {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.pd-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pd-key {
+  display: inline-block;
+  width: 16px;
+  height: 8px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--pd-blue) 60%, var(--background-primary));
+}
+
+.pd-key--proposed {
+  background-color: color-mix(in srgb, var(--pd-blue) 25%, var(--background-primary));
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 3px,
+    color-mix(in srgb, var(--pd-blue) 55%, var(--background-primary)) 3px 6px
+  );
+}
+
+.pd-hidden-note {
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+/* -------------------------------------------------------------- timeline */
+
+.pd-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  background: var(--background-primary);
+}
+
+.pd-grid {
+  --pd-label-width: 240px;
+  display: grid;
+  grid-template-columns: var(--pd-label-width) minmax(var(--pd-track-width, 240px), 1fr);
+  position: relative;
+  width: 100%;
+  min-width: calc(var(--pd-label-width) + var(--pd-track-width, 240px));
+}
+
+.pd-head-row {
+  min-height: 34px;
+  background: var(--background-secondary);
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.pd-head-label {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.pd-head-label,
+.pd-row-label {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  border-right: 1px solid var(--background-modifier-border);
+}
+
+.pd-head-label {
+  background: var(--background-secondary);
+}
+
+.pd-row-label {
+  background: var(--background-primary);
+}
+
+.pd-head-track {
+  position: relative;
+  min-width: 0;
+}
+
+.pd-tick-label {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.pd-tick-label--major {
+  color: var(--text-muted);
+}
+
+.pd-row-label {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 54px;
+  padding: 4px 12px;
+  border-top: 1px solid color-mix(in srgb, var(--background-modifier-border) 70%, transparent);
+}
+
+.pd-row-track {
+  position: relative;
+  z-index: 1;
+  min-height: 54px;
+  min-width: 0;
+  border-top: 1px solid color-mix(in srgb, var(--background-modifier-border) 70%, transparent);
+}
+
+.pd-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--pd-accent, var(--pd-neutral));
+}
+
+.pd-label-text {
+  min-width: 0;
+}
+
+.pd-label-name {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-normal);
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pd-label-name:hover {
+  color: var(--text-accent);
+}
+
+.pd-label-sub {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pd-label-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.pd-warn {
+  display: inline-grid;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-on-accent, #fff);
+  background: var(--pd-danger);
+  cursor: help;
+}
+
+/* ------------------------------------------------------------------ bars */
+
+.pd-bar {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 26px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  overflow: hidden;
+  cursor: pointer;
+  background-color: color-mix(
+    in srgb,
+    var(--pd-accent, var(--pd-neutral)) 20%,
+    var(--background-primary)
+  );
+  border: 1px solid color-mix(in srgb, var(--pd-accent, var(--pd-neutral)) 45%, transparent);
+}
+
+.pd-bar--proposed {
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 5px,
+    color-mix(in srgb, var(--text-normal) 8%, transparent) 5px 10px
+  );
+}
+
+.pd-bar-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0;
+  background: color-mix(in srgb, var(--pd-accent, var(--pd-neutral)) 55%, transparent);
+  pointer-events: none;
+}
+
+.pd-bar-text {
+  position: relative;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pd-cat-closed {
+  opacity: 0.75;
+}
+
+/* ------------------------------------------------------------ milestones */
+
+.pd-milestone {
+  position: absolute;
+  top: calc(50% + 14px + var(--pd-stack, 0) * 9px);
+  transform: translate(-50%, -50%);
+  display: inline-grid;
+  place-items: center;
+  padding: 0 2px;
+  border: 0;
+  border-radius: 4px;
+  background: var(--background-primary);
+  color: var(--pd-accent, var(--pd-neutral));
+  font: inherit;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--pd-accent, var(--pd-neutral)) 40%, transparent);
+}
+
+.pd-milestone-glyph {
+  font-size: 10px;
+  line-height: 1;
+}
+
+.pd-milestone:hover {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--pd-accent, var(--pd-neutral)) 70%, transparent);
+}
+
+/* -------------------------------------------------------------- overlay */
+
+.pd-overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--pd-label-width);
+  right: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.pd-gridline {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: color-mix(in srgb, var(--background-modifier-border) 60%, transparent);
+}
+
+.pd-gridline--major {
+  background: var(--background-modifier-border);
+}
+
+.pd-today {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--pd-danger);
+  opacity: 0.85;
+}
+
+.pd-today-label {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 10px;
+  color: var(--pd-danger);
+  background: color-mix(in srgb, var(--pd-danger) 14%, var(--background-primary));
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------- sections */
+
+.pd-section {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: var(--background-primary);
+}
+
+.pd-section-title {
+  margin: 0 0 6px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.pd-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.pd-list-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.pd-list-reason {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.pd-warning .pd-list-reason {
+  color: color-mix(in srgb, var(--pd-danger) 70%, var(--text-muted));
+}
+
+.pd-section-note {
+  margin: 6px 0 0;
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+.pd-link {
+  color: var(--text-accent);
+  text-decoration: none;
+}
+
+.pd-link:hover {
+  text-decoration: underline;
+}
+
+.pd-empty {
+  padding: 18px;
+  text-align: center;
+  color: var(--text-muted);
+  border: 1px dashed var(--background-modifier-border);
+  border-radius: 8px;
+}
+
+.pd-empty-hint {
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+/* ---------------------------------------------------------- note summary */
+
+.pd-note {
+  gap: 12px;
+}
+
+.pd-ns-chip-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pd-ns-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--pd-accent, var(--pd-neutral)) 80%, var(--text-normal));
+  background: color-mix(
+    in srgb,
+    var(--pd-accent, var(--pd-neutral)) 14%,
+    var(--background-primary)
+  );
+  border: 1px solid color-mix(in srgb, var(--pd-accent, var(--pd-neutral)) 35%, transparent);
+}
+
+.pd-ns-chip-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--pd-accent, var(--pd-neutral));
+}
+
+.pd-ns-chip-sep {
+  color: var(--text-faint);
+}
+
+.pd-ns-hint {
+  margin: 2px 0 0;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--pd-danger) 80%, var(--text-muted));
+}
+
+.pd-ns-props {
+  border-top: 1px solid var(--background-modifier-border);
+  border-bottom: 1px solid var(--background-modifier-border);
+  padding: 6px 0;
+}
+
+.pd-ns-row {
+  display: grid;
+  grid-template-columns: 128px minmax(0, 1fr);
+  align-items: center;
+  min-height: 28px;
+  padding: 0 8px;
+  border-radius: 4px;
+}
+
+.pd-ns-row:hover {
+  background: var(--background-secondary);
+}
+
+.pd-ns-key {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.pd-ns-value {
+  font-size: 12px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.pd-ns-focus {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.pd-ns-panel {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  padding: 10px 12px;
+  background: var(--background-primary);
+}
+
+.pd-ns-panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.pd-ns-panel-label {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.pd-ns-panel-value {
+  font-size: 13px;
+}
+
+.pd-ns-panel-strong {
+  display: block;
+  margin-top: 5px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.pd-progress {
+  height: 7px;
+  border-radius: 99px;
+  background: var(--background-secondary);
+  overflow: hidden;
+}
+
+.pd-progress i {
+  display: block;
+  height: 100%;
+  background: var(--pd-accent, var(--interactive-accent));
+}
+
+.pd-ns-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 4px 18px;
+}
+
+.pd-ns-column-title {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.pd-ns-column-text {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.pd-ns-list {
+  margin: 0;
+  padding: 0 0 0 2px;
+  list-style: none;
+  display: grid;
+  gap: 3px;
+}
+
+.pd-ns-list-item {
+  position: relative;
+  padding-left: 14px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.pd-ns-list-item::before {
+  content: "○";
+  position: absolute;
+  left: 0;
+  color: var(--pd-green);
+}
+
+.pd-ns-empty {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
+/* ------------------------------------------------------------ a11y focus */
+
+.project-dashboard a:focus-visible,
+.project-dashboard button:focus-visible,
+.project-dashboard [tabindex]:focus-visible {
+  outline: 2px solid var(--interactive-accent);
+  outline-offset: 1px;
+}
+
+/* --------------------------------------------------- narrow pane layouts */
+
+@container (max-width: 720px) {
+  .pd-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .pd-cell {
+    border-right: 0;
+    border-bottom: 1px solid var(--background-modifier-border);
+  }
+
+  .pd-cell:last-child {
+    border-bottom: 0;
+  }
+
+  .pd-grid {
+    --pd-label-width: 168px;
+  }
+
+  .pd-label-sub {
+    display: none;
+  }
+}
+
+@container (max-width: 480px) {
+  .pd-grid {
+    --pd-label-width: 132px;
+  }
+
+  .pd-bar-text {
+    display: none;
+  }
+
+  .pd-ns-row {
+    grid-template-columns: 104px minmax(0, 1fr);
+  }
+}

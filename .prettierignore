@@ -1,0 +1,6 @@
+node_modules/
+main.js
+docs/screenshots/
+tests/visual/out/
+demo-vault/
+package-lock.json

@@ -1,0 +1,10 @@
+{
+  "id": "project-dashboard",
+  "name": "Project Dashboard",
+  "version": "0.1.0",
+  "minAppVersion": "1.14.4",
+  "description": "A read-only project timeline and project-note summary driven by native properties and Bases.",
+  "author": "Spencer Norwick",
+  "authorUrl": "https://github.com/Spencer-Norwick",
+  "isDesktopOnly": false
+}

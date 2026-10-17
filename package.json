@@ -1,0 +1,41 @@
+{
+  "name": "obsidian-project-dashboard",
+  "version": "0.1.0",
+  "description": "A read-only project timeline and project-note summary for Obsidian, driven by native properties and Bases.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "node esbuild.config.mjs production",
+    "demo:install": "node esbuild.config.mjs production demo",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "screenshots": "node tests/visual/make-screenshots.mjs",
+    "verify:dist": "vitest run tests/dist.test.ts",
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm run build && npm run test"
+  },
+  "keywords": [
+    "obsidian",
+    "obsidian-plugin",
+    "bases",
+    "projects",
+    "timeline"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^9.16.0",
+    "@types/node": "^22.10.0",
+    "esbuild": "^0.24.0",
+    "eslint": "^9.16.0",
+    "happy-dom": "^15.11.0",
+    "obsidian": "1.14.4",
+    "prettier": "^3.4.0",
+    "typescript": "^5.7.0",
+    "typescript-eslint": "^8.18.0",
+    "vitest": "^2.1.0"
+  }
+}

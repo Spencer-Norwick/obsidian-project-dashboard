@@ -1,0 +1,43 @@
+filters:
+  and:
+    # Skip a template folder so template notes never appear as rows.
+    # Remove or rename this clause to match your own vault layout.
+    - not:
+        - file.inFolder("Templates")
+    - or:
+        - 'type == "project"'
+        - 'type == "milestone"'
+
+properties:
+  status:
+    displayName: Status
+  attention:
+    displayName: Attention
+  schedule_state:
+    displayName: Schedule
+  priority:
+    displayName: Priority
+  start:
+    displayName: Start
+  target:
+    displayName: Target
+  progress:
+    displayName: Progress
+
+views:
+  - type: project-timeline
+    name: Timeline
+    scale: automatic
+    showCompleted: false
+
+  - type: table
+    name: Table
+    order:
+      - file.name
+      - type
+      - status
+      - attention
+      - priority
+      - start
+      - target
+      - progress

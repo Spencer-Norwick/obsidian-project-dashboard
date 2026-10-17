@@ -1,0 +1,14 @@
+node_modules/
+*.log
+.DS_Store
+
+# Local Chromium output for the visual harness
+tests/visual/out/
+
+# The demo vault is a development vault; installed plugin builds are local-only.
+demo-vault/.obsidian/plugins/project-dashboard/
+demo-vault/.obsidian/workspace.json
+demo-vault/.obsidian/workspace-mobile.json
+demo-vault/.obsidian/appearance.json
+demo-vault/.obsidian/cache/
+demo-vault/.trash/
