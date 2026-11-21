@@ -193,3 +193,90 @@ describe("failure behavior", () => {
     expect(categoryOf(null, null)).toBe("neutral");
   });
 });
+
+describe("closed outcomes and deliberately unscheduled projects", () => {
+  it("preserves a missed cancellation without warnings or an active timeline bar", () => {
+    const entries = [
+      entry("Closed contest.md", {
+        type: "project",
+        status: "cancelled",
+        schedule_state: "missed",
+        start: "2026-10-17",
+        target: "2026-11-15",
+        progress: 0,
+      }),
+      entry("Unfinished draft.md", {
+        type: "milestone",
+        parent_project: "[[Closed contest]]",
+        target: "2026-11-05",
+        status: "scheduled",
+      }),
+    ];
+    const hidden = modelFor(entries);
+    expect(hidden.timeline).toHaveLength(0);
+    expect(hidden.needsDates).toHaveLength(0);
+    expect(hidden.warnings).toEqual([]);
+    expect(hidden.hiddenCount).toBe(2);
+    expect(hidden.projects[0]?.scheduleState).toBe("missed");
+    expect(hidden.projects[0]?.progress).toBe(0);
+    expect(hidden.projects[0]?.milestones).toHaveLength(1);
+    const revealed = modelFor(entries, true);
+    expect(revealed.timeline).toHaveLength(1);
+    expect(categoryOf(revealed.projects[0]?.status ?? null, null)).toBe("closed");
+    expect(revealed.warnings).toEqual([]);
+  });
+
+  it.each(["defining", "waiting", "paused"])(
+    "lists an undated proposed %s project as unscheduled without inventing dates",
+    (status) => {
+      const model = modelFor([
+        entry("Parked robot.md", {
+          type: "project",
+          status,
+          schedule_state: "proposed",
+          start: "",
+          target: "",
+        }),
+      ]);
+      expect(model.unscheduled).toHaveLength(1);
+      expect(model.unscheduled[0]?.start).toBeNull();
+      expect(model.unscheduled[0]?.target).toBeNull();
+      expect(model.needsDates).toEqual([]);
+      expect(model.timeline).toEqual([]);
+      expect(model.warnings).toEqual([]);
+      expect(model.hiddenCount).toBe(0);
+    },
+  );
+
+  it.each([
+    { status: "active", schedule_state: "proposed" },
+    { status: "scheduled", schedule_state: "proposed" },
+    { status: "waiting", schedule_state: "committed" },
+    { status: "waiting", schedule_state: "unknown" },
+    { status: "waiting", schedule_state: "proposed", start: "2026-11-20" },
+    { status: "waiting", schedule_state: "proposed", target: "2026-12-20" },
+    { status: "waiting", schedule_state: "proposed", start: "someday" },
+    { status: "waiting", schedule_state: "proposed", target: "2026-02-30" },
+  ])("keeps real scheduling problems visible: %j", (values) => {
+    const model = modelFor([entry("Needs planning.md", { type: "project", ...values })]);
+    expect(model.unscheduled).toEqual([]);
+    expect(model.needsDates).toHaveLength(1);
+    if (values.start === "someday" || values.target === "2026-02-30") {
+      expect(model.warnings.some((warning) => warning.kind === "invalid-date")).toBe(true);
+    }
+  });
+
+  it("places a proposed parked project on the timeline once real dates exist", () => {
+    const model = modelFor([
+      entry("Robot.md", {
+        type: "project",
+        status: "waiting",
+        schedule_state: "proposed",
+        start: "2026-12-01",
+        target: "2026-12-20",
+      }),
+    ]);
+    expect(model.unscheduled).toEqual([]);
+    expect(model.timeline).toHaveLength(1);
+  });
+});

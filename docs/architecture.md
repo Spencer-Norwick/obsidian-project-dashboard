@@ -41,7 +41,7 @@ Projects.base  ──filter──▶  BasesQueryResult.data (BasesEntry[])
                                    │
                                    ▼
                         model.ts   → DashboardModel  (projects, milestones,
-                                   │                   needs-dates, warnings)
+                                   │                   needs-dates, unscheduled, warnings)
                     ┌──────────────┼──────────────────┐
                     ▼              ▼                  ▼
               select.ts        scale.ts           render.ts
@@ -78,22 +78,22 @@ All dates are treated as plain local calendar dates:
 
 ## Failure behavior matrix
 
-| Situation                             | Behavior                                                                    |
-| ------------------------------------- | --------------------------------------------------------------------------- |
-| `start` and `target` both valid       | Bar drawn from `start` to `target`.                                         |
-| Only one date (either)                | Listed under **Needs dates** with the missing field named.                  |
-| Neither date                          | Listed under **Needs dates**.                                               |
-| `target` before `start`               | Warning; bar omitted.                                                       |
-| Unreadable date (e.g. `someday`)      | Treated as missing + warning that quotes the value.                         |
-| Invalid `progress` (non-numeric)      | Rendered as 0 + warning.                                                    |
-| Invalid `progress` (out of range)     | Clamped for rendering only + warning quoting the original value.            |
-| Fractional `progress`                 | Rounded for rendering + warning.                                            |
-| Unknown enum value                    | Neutral color fallback + warning quoting the invalid value.                 |
-| Completed / cancelled items           | Hidden by default; revealed with the "Show completed and cancelled" option. |
-| Milestone without a resolvable parent | Warning; the milestone is not attached to a row.                            |
-| Milestone without a target            | Warning; no marker is drawn.                                                |
-| Empty dataset                         | Calm empty state with guidance.                                             |
-| Duplicate milestones on one date      | Markers stack vertically; nothing crashes.                                  |
+| Situation                             | Behavior                                                                                           |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `start` and `target` both valid       | Bar drawn from `start` to `target`.                                                                |
+| Only one date (either)                | Listed under **Needs dates** with the missing field named.                                         |
+| Neither date                          | Proposed defining/waiting/paused projects appear under **Unscheduled**; otherwise **Needs dates**. |
+| `target` before `start`               | Warning; bar omitted.                                                                              |
+| Unreadable date (e.g. `someday`)      | Treated as missing + warning that quotes the value.                                                |
+| Invalid `progress` (non-numeric)      | Rendered as 0 + warning.                                                                           |
+| Invalid `progress` (out of range)     | Clamped for rendering only + warning quoting the original value.                                   |
+| Fractional `progress`                 | Rounded for rendering + warning.                                                                   |
+| Unknown enum value                    | Neutral color fallback + warning quoting the invalid value.                                        |
+| Completed / cancelled items           | Hidden by default; revealed with the "Show completed and cancelled" option.                        |
+| Milestone without a resolvable parent | Warning; the milestone is not attached to a row.                                                   |
+| Milestone without a target            | Warning; no marker is drawn.                                                                       |
+| Empty dataset                         | Calm empty state with guidance.                                                                    |
+| Duplicate milestones on one date      | Markers stack vertically; nothing crashes.                                                         |
 
 ## Summary strip rules
 

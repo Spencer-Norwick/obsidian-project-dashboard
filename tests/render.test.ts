@@ -5,7 +5,7 @@ import { buildDashboard } from "../src/model";
 import { renderDashboard } from "../src/render";
 import { type ScaleOption, buildScale, rangeForItems, xForDate } from "../src/scale";
 import { selectHighlights } from "../src/select";
-import { TODAY, coreEntries, demoEntries } from "./fixtures/entries";
+import { TODAY, coreEntries, demoEntries, entry } from "./fixtures/entries";
 
 interface SetupOptions {
   showCompleted?: boolean;
@@ -236,5 +236,33 @@ describe("dashboard rendering on the integration fixture", () => {
     expect(container.querySelector(".pd-warnings")).toBeNull();
     expect(container.querySelector(".pd-needs")).toBeNull();
     expect(container.querySelectorAll(".pd-bar")).toHaveLength(5);
+  });
+});
+
+describe("unscheduled rendering", () => {
+  it("keeps a parked project visible and opens its note without a missing-date warning", () => {
+    const { container, openNote } = setup([
+      entry("Parked robot.md", { type: "project", status: "waiting", schedule_state: "proposed" }),
+      entry("Closed contest.md", {
+        type: "project",
+        status: "cancelled",
+        schedule_state: "missed",
+      }),
+    ]);
+    expect(container.querySelector(".pd-needs")).toBeNull();
+    expect(container.querySelector(".pd-warnings")).toBeNull();
+    expect(container.querySelectorAll(".pd-bar")).toHaveLength(0);
+    const section = container.querySelector(".pd-unscheduled");
+    expect(section?.textContent).toContain("Unscheduled (1)");
+    expect(section?.textContent).toContain("Parked robot");
+    expect(section?.textContent).toContain("Dates have not been planned");
+    expect(container.querySelector(".pd-empty")?.textContent).toContain("Unscheduled");
+    expect(container.querySelector(".pd-empty")?.textContent).not.toContain(
+      "All projects are complete",
+    );
+    section
+      ?.querySelector("a")
+      ?.dispatchEvent(new MouseEvent("click", { bubbles: true, button: 0 }));
+    expect(openNote).toHaveBeenCalledWith("Parked robot.md", expect.anything());
   });
 });

@@ -179,7 +179,7 @@ var STATUS_VALUES = [
   "cancelled"
 ];
 var ATTENTION_VALUES = ["finish-first", "normal"];
-var SCHEDULE_STATE_VALUES = ["proposed", "committed"];
+var SCHEDULE_STATE_VALUES = ["proposed", "committed", "missed"];
 var PRIORITY_VALUES = ["high", "medium", "low"];
 var CLOSED_STATUS_VALUES = ["complete", "cancelled"];
 function isStatus(value) {
@@ -503,6 +503,7 @@ function buildDashboard(rows, options) {
   }
   const timeline = [];
   const needsDates = [];
+  const unscheduled = [];
   const warnings = [];
   const hiddenProjects = /* @__PURE__ */ new Set();
   let hiddenCount = 0;
@@ -524,6 +525,8 @@ function buildDashboard(rows, options) {
       } else {
         timeline.push({ project, start: project.start, target: project.target });
       }
+    } else if (project.scheduleState === "proposed" && (project.status === "defining" || project.status === "waiting" || project.status === "paused") && project.start === null && project.target === null && project.startInvalid === null && project.targetInvalid === null) {
+      unscheduled.push(project);
     } else {
       needsDates.push({ project, reason: needsDatesReason(project) });
     }
@@ -540,6 +543,7 @@ function buildDashboard(rows, options) {
   return {
     timeline: sortTimelineItems(timeline),
     needsDates,
+    unscheduled,
     warnings,
     projects,
     milestones,
@@ -1225,7 +1229,7 @@ function renderEmptyState(input, container) {
         "Filter the Base to notes with type: project (add type: milestone for milestones)."
       )
     );
-  } else if (model.hiddenCount > 0 && model.needsDates.length === 0 && model.warnings.length === 0) {
+  } else if (model.hiddenCount > 0 && model.needsDates.length === 0 && model.unscheduled.length === 0 && model.warnings.length === 0) {
     empty.append(
       el2(
         "div",
@@ -1249,6 +1253,8 @@ function renderEmptyState(input, container) {
         "No project can be placed on the timeline. See the data warnings below."
       )
     );
+  } else if (model.unscheduled.length > 0) {
+    empty.append(el2("div", void 0, "No scheduled projects to show. See \u201CUnscheduled\u201D below."));
   } else {
     empty.append(el2("div", void 0, "No projects to show."));
   }
@@ -1274,6 +1280,28 @@ function renderSections(input, container) {
         "p",
         "pd-section-note",
         "These notes need a start and a target date before they can appear on the timeline."
+      )
+    );
+    container.append(section);
+  }
+  if (model.unscheduled.length > 0) {
+    const section = el2("section", "pd-section pd-unscheduled");
+    section.append(el2("h3", "pd-section-title", `Unscheduled (${model.unscheduled.length})`));
+    const list = el2("ul", "pd-list");
+    for (const project of model.unscheduled) {
+      const li = el2("li", "pd-list-item");
+      const link = el2("a", "pd-link", project.name);
+      link.href = "#";
+      attachInteractions(link, project.path, interactions);
+      li.append(link);
+      list.append(li);
+    }
+    section.append(list);
+    section.append(
+      el2(
+        "p",
+        "pd-section-note",
+        "Dates have not been planned for these proposed projects. They remain off the timeline until a start and target date are set."
       )
     );
     container.append(section);

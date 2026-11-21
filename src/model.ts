@@ -96,6 +96,7 @@ export interface NeedsDatesItem {
 export interface DashboardModel {
   timeline: TimelineItem[];
   needsDates: NeedsDatesItem[];
+  unscheduled: ProjectRecord[];
   warnings: Warning[];
   projects: ProjectRecord[];
   milestones: MilestoneRecord[];
@@ -469,6 +470,7 @@ export function buildDashboard(rows: RawRow[], options: BuildOptions): Dashboard
 
   const timeline: TimelineItem[] = [];
   const needsDates: NeedsDatesItem[] = [];
+  const unscheduled: ProjectRecord[] = [];
   const warnings: Warning[] = [];
   const hiddenProjects = new Set<string>();
   let hiddenCount = 0;
@@ -493,6 +495,19 @@ export function buildDashboard(rows: RawRow[], options: BuildOptions): Dashboard
       } else {
         timeline.push({ project, start: project.start, target: project.target });
       }
+    } else if (
+      project.scheduleState === "proposed" &&
+      (project.status === "defining" ||
+        project.status === "waiting" ||
+        project.status === "paused") &&
+      project.start === null &&
+      project.target === null &&
+      project.startInvalid === null &&
+      project.targetInvalid === null
+    ) {
+      // A parked proposal has no promised schedule. Keep it visible without
+      // treating intentionally blank dates as work that needs correction.
+      unscheduled.push(project);
     } else {
       needsDates.push({ project, reason: needsDatesReason(project) });
     }
@@ -512,6 +527,7 @@ export function buildDashboard(rows: RawRow[], options: BuildOptions): Dashboard
   return {
     timeline: sortTimelineItems(timeline),
     needsDates,
+    unscheduled,
     warnings,
     projects,
     milestones,

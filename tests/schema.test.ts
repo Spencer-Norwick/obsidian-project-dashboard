@@ -54,6 +54,7 @@ describe("canonical schema", () => {
     expect(isAttention("urgent")).toBe(false);
     expect(isScheduleState("proposed")).toBe(true);
     expect(isScheduleState("committed")).toBe(true);
+    expect(isScheduleState("missed")).toBe(true);
     expect(isScheduleState("draft")).toBe(false);
     expect(isPriority("high")).toBe(true);
     expect(isPriority("urgent")).toBe(false);
