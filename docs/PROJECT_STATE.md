@@ -3,7 +3,7 @@
 Last updated: 2026-11-20
 Repository: obsidian-project-dashboard
 Branch: codex/closed-projects-unscheduled-backlog
-Last known-good commit: ca84cbf (baseline; 45 focused tests passed before changes)
+Last known-good commit: 5403310 (source/build checks and 138 tests passed)
 
 ## Current Objective
 
@@ -28,13 +28,13 @@ proposals visible without inventing a timeline schedule.
 
 ## Validation
 
-| Check                       | Result  | Evidence                                        |
-| --------------------------- | ------- | ----------------------------------------------- |
-| Focused baseline            | passed  | 45 tests before implementation                  |
-| Regression reproduction     | passed  | New cases failed against the old implementation |
-| `npm run check`             | passed  | Formatting, lint, typecheck, build, 138 tests   |
-| Live application validation | pending | Verify installed plugin before handoff          |
-| Remote integration          | pending | Push and merge after checks pass                |
+| Check                            | Result  | Evidence                                                                                                                        |
+| -------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Focused baseline                 | passed  | 45 tests before implementation                                                                                                  |
+| Regression reproduction          | passed  | New cases failed against the old implementation                                                                                 |
+| `npm run check`                  | passed  | Formatting, lint, typecheck, build, 138 tests                                                                                   |
+| Installed-bundle data smoke test | passed  | Old build reproduces the issues; installed build renders local data without warnings, preserving closed history and blank dates |
+| Live application refresh         | blocked | Native window control returned noWindowsAvailable; app/plugin reload remains unverified                                         |
 
 ## Active Problems
 
@@ -42,7 +42,8 @@ proposals visible without inventing a timeline schedule.
   local data/render smoke test using a simulated DOM and Obsidian API boundary.
 - A live refresh could not be confirmed because native window control was
   unavailable. Reload the app/plugin to load the installed bundle.
-- Remote delivery remains in progress.
+- Delivery evidence and cloud validation are recorded in
+  [PR #2](https://github.com/Spencer-Norwick/obsidian-project-dashboard/pull/2).
 
 ## Decisions and Constraints
 
@@ -54,4 +55,4 @@ proposals visible without inventing a timeline schedule.
 
 ## Next Action
 
-1. Deliver through a checked PR, then reload the installed plugin in Obsidian.
+1. Reload the installed plugin or restart Obsidian to activate the updated build.
