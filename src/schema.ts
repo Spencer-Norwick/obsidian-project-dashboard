@@ -23,7 +23,7 @@ export type Status = (typeof STATUS_VALUES)[number];
 export const ATTENTION_VALUES = ["finish-first", "normal"] as const;
 export type Attention = (typeof ATTENTION_VALUES)[number];
 
-export const SCHEDULE_STATE_VALUES = ["proposed", "committed"] as const;
+export const SCHEDULE_STATE_VALUES = ["proposed", "committed", "missed"] as const;
 export type ScheduleState = (typeof SCHEDULE_STATE_VALUES)[number];
 
 export const PRIORITY_VALUES = ["high", "medium", "low"] as const;

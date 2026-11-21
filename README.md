@@ -81,13 +81,17 @@ states are visible.
 
 The plugin never invents missing dates:
 
-- One date or no dates → the note is listed under **Needs dates** with the
+- Undated `proposed` projects in `defining`, `waiting`, or `paused` → listed
+  under **Unscheduled**, with their dates left blank.
+- Other missing or partial dates → listed under **Needs dates** with the
   missing field named.
 - `target` before `start` → warning, no bar.
 - Invalid progress → warning, safely clamped for rendering only.
 - Unknown enum value → neutral fallback, with the invalid value named in a
   warning.
 - Completed / cancelled → hidden unless "Show completed and cancelled" is on.
+  Use `cancelled` for abandoned outcomes; `schedule_state: missed` records a
+  missed schedule without an unknown-value warning.
 
 ## Privacy and safety
 

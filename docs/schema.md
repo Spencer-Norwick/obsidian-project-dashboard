@@ -72,12 +72,22 @@ hard_deadline: false
 
 - `status`: `defining`, `scheduled`, `active`, `waiting`, `paused`, `complete`, `cancelled`
 - `attention`: `finish-first`, `normal`
-- `schedule_state`: `proposed`, `committed`
+- `schedule_state`: `proposed`, `committed`, `missed`
 - `priority`: `high`, `medium`, `low`
 - `progress`: integer from `0` through `100`
 
 The dashboard hides `complete` and `cancelled` items by default and offers a
-view option to reveal them.
+view option to reveal them. Use `status: cancelled` for an abandoned project,
+including one whose deadline was missed without producing its outcome. Keep
+`progress`, dates, and unfinished checklists as history rather than marking them
+successful. `schedule_state: missed` records the missed schedule; lifecycle
+visibility is controlled by `status`, not by the schedule outcome.
+
+A `proposed` project in `defining`, `waiting`, or `paused` with both dates blank
+appears under **Unscheduled**, not **Needs dates**. No dates are inferred. Add
+real `start` and `target` dates when planning resumes. Partial dates, unreadable
+dates, and undated `active`, `scheduled`, or `committed` projects still appear
+under **Needs dates**; invalid values still produce warnings.
 
 ## Relationships
 

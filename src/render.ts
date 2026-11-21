@@ -385,6 +385,7 @@ function renderEmptyState(input: DashboardRenderInput, container: HTMLElement): 
   } else if (
     model.hiddenCount > 0 &&
     model.needsDates.length === 0 &&
+    model.unscheduled.length === 0 &&
     model.warnings.length === 0
   ) {
     empty.append(
@@ -412,6 +413,8 @@ function renderEmptyState(input: DashboardRenderInput, container: HTMLElement): 
         "No project can be placed on the timeline. See the data warnings below.",
       ),
     );
+  } else if (model.unscheduled.length > 0) {
+    empty.append(el("div", undefined, "No scheduled projects to show. See “Unscheduled” below."));
   } else {
     empty.append(el("div", undefined, "No projects to show."));
   }
@@ -439,6 +442,29 @@ function renderSections(input: DashboardRenderInput, container: HTMLElement): vo
         "p",
         "pd-section-note",
         "These notes need a start and a target date before they can appear on the timeline.",
+      ),
+    );
+    container.append(section);
+  }
+
+  if (model.unscheduled.length > 0) {
+    const section = el("section", "pd-section pd-unscheduled");
+    section.append(el("h3", "pd-section-title", `Unscheduled (${model.unscheduled.length})`));
+    const list = el("ul", "pd-list");
+    for (const project of model.unscheduled) {
+      const li = el("li", "pd-list-item");
+      const link = el("a", "pd-link", project.name);
+      link.href = "#";
+      attachInteractions(link, project.path, interactions);
+      li.append(link);
+      list.append(li);
+    }
+    section.append(list);
+    section.append(
+      el(
+        "p",
+        "pd-section-note",
+        "Dates have not been planned for these proposed projects. They remain off the timeline until a start and target date are set.",
       ),
     );
     container.append(section);
